@@ -1,0 +1,9 @@
+{
+  "name": "Presentation name",
+  "description": "Example Presentation",
+  "author": "Your Name",
+  "pause_msg": "Paused !!!",
+  "sections": [
+    {"section":"slides"}
+  ]
+}
