@@ -304,39 +304,304 @@ at org.springframework.beans.factory.support....
 
 # Local implementation #
 
+	@@@ java
+	Folder folder = new LocalFolder("/path/on/disk");
+
+	File file = folder.getFile("subfolder/file.txt");
+	InputSteam stream = file.getContent().asInputStream();
+	try {
+		// do something ...
+	} finally {
+		stream.close();
+	}
+
 <!SLIDE>
 
-# Temp Disk #
+# Mongo implementation #
+
+	@@@ java
+	Folder folder = new MongoFolder(db, "bucket");
+
+	File file = folder.getFile("subfolder/file.txt");
+	InputSteam stream = file.getContent().asInputStream();
+	try {
+		// do something ...
+	} finally {
+		stream.close();
+	}
 
 <!SLIDE>
 
 # Embrace the change #
 
-* Differences that help
-* It you need to change it, make it better
+* If you need to change your code, make it better
+* Design your API around **your** needs
+* Make it hard to do the wrong thing
+
+<!SLIDE>
+
+# Example #
+
+	@@@ java
+	import java.io.File;
+
+	public void someMethod(File folder) {
+		if(!folder.isDirectory()) {
+			throw new IllegalArgumentException("Must be a folder");
+		}
+		// ...
+	}
+
+<!SLIDE>
+
+# Example #
+
+	@@@ java
+	import org.cloudfoundry.tools.io.Folder;
+
+	public void someMethod(Folder folder) {
+		// ...
+	}
+
+<!SLIDE>
+
+# Example #
+
+	@@@ java
+	import java.io.File;
+
+	public void someMethod(File file) throw IOException {
+		StringBuffer content = new StringBuffer();
+		Reader reader = new FileReader(filePath));
+		try {
+			char[] buf = new char[1024];
+			int numRead=0;
+			while((numRead=reader.read(buf)) != -1){
+				String readData = String.valueOf(buf, 0, numRead);
+				fileData.append(readData);
+				buf = new char[1024];
+			}
+		finally {
+			reader.close();
+		}
+		// do something with content
+	}
+
+<!SLIDE>
+
+# Example #
+
+	@@@ java
+	import org.cloudfoundry.tools.io.File;
+
+	public void someMethod(File file) {
+		String content = file.getContent().asString();
+		// do something with content
+	}
+
+	// Only throws RuntimeExceptions, IOException is wrapped
+
+.notes Highlight no IOException
+
+<!SLIDE>
+
+# Content #
+
+	@@@ java
+	file.getContent()
+
+		String asString();
+		byte[] asBytes();
+
+		InputStream asInputStream();
+		OutputStream asOutputStream();
+		
+		Reader asReader();
+		Writer asWriter();
+
+		void write(String content)
+		void write(InputStream content)
+		void write(Reader content);
+
+		void copyTo(OutputStream outputStream)
+		void copyTo(Writer writer)
+
+<!SLIDE>
+
+# Resources and filtering
+
+	@@@ java
+
+	// recursively delete backup files
+	folder.find().files().include(
+			FilterOn.names().ending(".bak")
+		).delete();
+
+
+
+	// copy immediate folders (excluding *.~*)
+	folder.list().folders().exclude(
+			FilterOn.antPattern("*.~*")
+		).copyTo(destinationFolder);
+
+<!SLIDE>
+
+# Zip Files #
+
+	@@@ java
+
+	// Create a zip stream
+	InputStream zipStream = ZipArchive.compress(folder);
+
+	// Unpack a zip
+	ZipArchive.unpack(zipStream, destinationFolder);
+
+	// Read a zip file as if it is a folder
+	Folder zip = new ZipArchive(file);
+	zip.getFile("/inside/zip/file.txt").getContent().asString();
+
+
+.notes Compress can handle resources
+
+<!SLIDE>
+
+# Virtual Folders #
+
+	@@@ java
+	// Virtual folder exist in memory
+	Folder folder = new VirtualFolder();
+	folder.getFile("/a/b.txt").getContent().write("in memory")
+
+	// Only overwritten data is stored
+	otherFolder.copyContentsTo(folder);
+	folder.getFile("a.txt").getContent().write("replaced");
+	folder.getFile("b.txt").getContent().asString();
+
+<!SLIDE subsection>
+
+# Files Demo #
 
 <!SLIDE>
 
 # How to @Configure mongo #
 
+	@@@ java
+	@Configuration
+	@Profile("cloud")
+	@ComponentScan
+	public class CloudConfiguration {
+
+		@Autowired
+		private MongoDbFactory mongo;
+
+		@Bean
+		public CloudMongoDbFactoryBean mongo() {
+			return new CloudMongoDbFactoryBean();
+		}
+	}
 
 <!SLIDE >
 
-# Demo File System #
+# Gottcha #
 
-<!SLIDE>
+* OSX Finder with WebDav does not work
+* Transfer-Encoding: chunked fails <sup>*</sup>
+* Finding problems like this can be hard
+	* Use Server logs
+	* Use packet sniffing (Wireshark)
 
-# Chunked Problem #
+<div class="footnote"><sup>*</sup> http://stackoverflow.com/questions/8528600/how-to-make-a-chunked-request-via-nginx</div>
 
-* Wireshark
+<!SLIDE subsection>
+
+# Timeout #
 
 <!SLIDE>
 
 # 504 Gateway Timeouts #
 
-* Default
-* Drip
-* Shim
+* You are not the only thing in the cloud
+* Sockets / File Handles are a commodity
+* You will be cut off after 30-60 seconds without traffic
+
+<!SLIDE>
+
+# Drip Feeding #
+
+	@@@ java
+
+	// If you keep data flowing you will not timeout
+
+	@RequestMapping("/drip")
+	public void drop(HttpServletResponse response) throws IOException {
+		ServletOutputStream outputStream = response.getOutputStream();
+		while(gotWorkToDo()) {
+			String fragment = doSomeWork(); // < 30 secs
+			outputStream.write(fragment);
+			response.flushBuffer();
+		}
+	}
+
+<!SLIDE>
+
+# Long Poll #
+
+<pre>
+[ Client ]              [ Server ]
+    |-----------------------&gt;|
+    |                        |
+    |&lt;--------- 200 ---------|
+</pre>
+
+<!SLIDE>
+
+# Long Poll #
+
+<pre>
+[ Client ]              [ Server ]
+    |-----------------------&gt;|
+    |                        |
+    |                        |
+    |                        |
+    |&lt;--------- 504 ---------|
+</pre>
+
+
+<!SLIDE>
+
+# Long Poll #
+
+<pre>
+[ Client ]              [ Nginx ] [ Tomcat ]
+    |-----------------------&gt;|--------&gt;|
+    |                        |         |
+    |                        |         |
+    |                        |         |
+    |&lt;--------- 504 ---------|         |
+                                       | continues to run
+                                       X
+                                 nowhere to go
+</pre>
+
+<!SLIDE>
+
+# Long Poll #
+
+<pre>
+[ Client ]              [ Nginx ] [ Tomcat ]
+    |-----------------------&gt;|--------&gt;|
+    |                        |         |
+    |                        |         |
+    X abort                  |         |
+    |---------- long poll --&gt;|--------&gt;|
+    |                        |         |
+    |                        |         | 
+    |&lt;---------- 200 --------|&lt;--------|
+</pre>
+
+
+
+
 
 <!SLIDE>
 
