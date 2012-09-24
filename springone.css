@@ -169,3 +169,7 @@ div.cover {
     top: 630px;
     font-style: italic;
 }
+
+.content > P {
+	text-align: left;
+}
