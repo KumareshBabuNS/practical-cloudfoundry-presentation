@@ -18,6 +18,8 @@
 
 # WaveMaker #
 
+&lt; screen shot here &gt;
+
 .notes TODO wavemaker screen shot.  Aquired 2011 100K+ java
 
 <!SLIDE>
@@ -49,8 +51,10 @@
 
 # Cloud PITA Factor #
 
-* local is PITA to setup but good to develop
-* cloud is opposite
+* Local is PITA to setup but good to develop
+* Cloud is opposite
+
+&lt; image here &gt;
 
 <!SLIDE>
 
@@ -244,7 +248,40 @@ at org.springframework.beans.factory.support....
 
 <!SLIDE>
 
-.notes picture here
+# Recap #
+
+<pre>
+
+	+-----------------------+
+	| Code          Feature |
+	+-----------------------+
+</pre>
+
+<!SLIDE>
+
+# Recap #
+
+<pre>
+
+	+------------||---------+
+	| Code       || Feature |
+	+------------||---------+
+	          interface
+
+</pre>
+
+<!SLIDE>
+
+# Recap #
+
+<pre>
+                  +---------+
+	+------------|| Cloud   |
+	| Code       |+---------+
+	+------------|| Local   |
+	              +---------+
+</pre>
+
 
 <!SLIDE>
 
@@ -274,7 +311,7 @@ at org.springframework.beans.factory.support....
 # File System #
 
 * Local storage will disappear when you application stops, crashes or moves
-* Use Mongo GridFS
+* Mongo GridFS is an alternative
 * There are limits
 	* 2GB Disk
 	* 240MB Mongo
@@ -507,7 +544,7 @@ at org.springframework.beans.factory.support....
 * OSX Finder with WebDav does not work
 * Transfer-Encoding: chunked fails <sup>*</sup>
 * Finding problems like this can be hard
-	* Use Server logs
+	* Use server logs
 	* Use packet sniffing (Wireshark)
 
 <div class="footnote"><sup>*</sup> http://stackoverflow.com/questions/8528600/how-to-make-a-chunked-request-via-nginx</div>
@@ -599,9 +636,68 @@ at org.springframework.beans.factory.support....
     |&lt;---------- 200 --------|&lt;--------|
 </pre>
 
+<!SLIDE>
 
+# Long Poll Client Shim #
 
+	@@@ html
+	<script type="text/javascript" 
+		th:src="@{/cloudfoundry/dojo-xhr-timeout-shim.js}"/>
 
+<p/>
+
+	@@@ javascript
+	dojo.xhrPost({
+		url : requestUrl,
+		load : function(result) {
+			// handle the result
+		},
+		error : function(result,ioargs) {
+			// handle the error
+		}
+	});
+
+<!SLIDE>
+
+# Long Poll Server Shim #
+
+	@@@ xml
+	<filter>
+		<filter-name>timeoutProtectionFilter</filter-name>
+		<filter-class>org.springframework.web.filter.
+				DelegatingFilterProxy</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>timeoutProtectionFilter</filter-name>
+		<servlet-name>dispatcherServlet</servlet-name>
+	</filter-mapping>
+
+<!SLIDE>
+
+# Long Poll Server Shim #
+
+	@@@ java
+	@Bean
+	public TimeoutProtectionFilter timeoutProtectionFilter() {
+		TimeoutProtectionFilter filter = 
+			new TimeoutProtectionFilter();
+		filter.setProtector(timeoutProtectionStrategy());
+		return filter;
+	}
+
+	@Bean
+	public TimeoutProtectionStrategy timeoutProtectionStrategy() {
+		return new ReplayingTimeoutProtectionStrategy();
+	}
+
+<!SLIDE subsection>
+
+# Timeout Demo #
+
+<!SLIDE> 
+
+# Security #
 
 <!SLIDE>
 
