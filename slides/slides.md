@@ -34,7 +34,7 @@
 
 <!SLIDE>
 
-# WaveMaker #
+# WaveMaker on Cloud Foundry #
 
 * <del>Local</del> Web Application
 * Projects saved <del>on disk</del>
@@ -60,8 +60,10 @@
 
 # General Tips #
 
-* Use logging
-* JUnit
+* Develop locally first
+* Use micro cloud foundry
+* Add logging
+* Unit test
 
 <!SLIDE subsection>
 
@@ -95,7 +97,7 @@
 
 
 
-					System.getProperty("user.name")));
+					System.getProperty("user.name")
 	
 <!SLIDE>
 
@@ -250,22 +252,28 @@ at org.springframework.beans.factory.support....
 
 # Recap #
 
+* Identify the features from your code to abstract
+
 <pre>
 
-	+-----------------------+
-	| Code          Feature |
-	+-----------------------+
+
+	+-----------------------------+
+	| Code ~~~~~~~~~~~~~~ Feature |
+	+-----------------------------+
 </pre>
 
 <!SLIDE>
 
 # Recap #
 
+* Define the interface and make existing code the implementation
+
 <pre>
 
-	+------------||---------+
-	| Code       || Feature |
-	+------------||---------+
+
+	+------------| |---------------+
+	| Code       | |       Feature |
+	+------------| |---------------+
 	          interface
 
 </pre>
@@ -274,12 +282,16 @@ at org.springframework.beans.factory.support....
 
 # Recap #
 
+* Create cloud and local variants
+
 <pre>
-                  +---------+
-	+------------|| Cloud   |
-	| Code       |+---------+
-	+------------|| Local   |
-	              +---------+
+                   +----------------+	
+                   | CloudFeature   |
+	+------------| +----------------+
+	| Code       |        or
+	+------------| +----------------+
+	               | LocalFeature   |
+	               +----------------+
 </pre>
 
 
@@ -345,7 +357,7 @@ at org.springframework.beans.factory.support....
 	Folder folder = new LocalFolder("/path/on/disk");
 
 	File file = folder.getFile("subfolder/file.txt");
-	InputSteam stream = file.getContent().asInputStream();
+	InputStream stream = file.getContent().asInputStream();
 	try {
 		// do something ...
 	} finally {
@@ -360,7 +372,7 @@ at org.springframework.beans.factory.support....
 	Folder folder = new MongoFolder(db, "bucket");
 
 	File file = folder.getFile("subfolder/file.txt");
-	InputSteam stream = file.getContent().asInputStream();
+	InputStream stream = file.getContent().asInputStream();
 	try {
 		// do something ...
 	} finally {
@@ -509,14 +521,14 @@ at org.springframework.beans.factory.support....
 	Folder folder = new VirtualFolder();
 	folder.getFile("/a/b.txt").getContent().write("in memory")
 
-	// Only overwritten data is stored
+	// Only overwritten data consumes space
 	otherFolder.copyContentsTo(folder);
 	folder.getFile("a.txt").getContent().write("replaced");
 	folder.getFile("b.txt").getContent().asString();
 
 <!SLIDE subsection>
 
-# Files Demo #
+# File Demo #
 
 <!SLIDE>
 
@@ -537,12 +549,35 @@ at org.springframework.beans.factory.support....
 		}
 	}
 
+<!SLIDE> 
+
+# Security #
+
+	@@@ xml
+	<security:http>
+		<security:http-basic />
+		<security:logout />
+		<security:intercept-url pattern="/dav/**" 
+			access="ROLE_WEBDAV" />
+	</security:http>
+	
+	<bean name="cloudFoundryAuthenticationProvider" 
+			class="org.cloudfoundry.tools.security.
+						CloudFoundryAuthenticationProvider">
+		<property name="authorities" value="ROLE_WEBDAV"/>
+	</bean>
+	
+	<security:authentication-manager>
+		<security:authentication-provider 
+			ref="cloudFoundryAuthenticationProvider"/>
+	</security:authentication-manager>
+
 <!SLIDE >
 
 # Gottcha #
 
 * OSX Finder with WebDav does not work
-* Transfer-Encoding: chunked fails <sup>*</sup>
+* Transfer-Encoding: chunked fails<sup>*</sup>
 * Finding problems like this can be hard
 	* Use server logs
 	* Use packet sniffing (Wireshark)
@@ -609,15 +644,15 @@ at org.springframework.beans.factory.support....
 # Long Poll #
 
 <pre>
-[ Client ]              [ Nginx ] [ Tomcat ]
-    |-----------------------&gt;|--------&gt;|
-    |                        |         |
-    |                        |         |
-    |                        |         |
-    |&lt;--------- 504 ---------|         |
-                                       | continues to run
-                                       X
-                                 nowhere to go
+[ Client ]              [ Nginx ]     [ Tomcat ]
+    |-----------------------&gt;|------------&gt;|
+    |                        |             |
+    |                        |             |
+    |                        |             |
+    |&lt;--------- 504 ---------|             |
+                                           | continues to run
+                                           X
+                                     nowhere to go
 </pre>
 
 <!SLIDE>
@@ -625,15 +660,15 @@ at org.springframework.beans.factory.support....
 # Long Poll #
 
 <pre>
-[ Client ]              [ Nginx ] [ Tomcat ]
-    |-----------------------&gt;|--------&gt;|
-    |                        |         |
-    |                        |         |
-    X abort                  |         |
-    |---------- long poll --&gt;|--------&gt;|
-    |                        |         |
-    |                        |         | 
-    |&lt;---------- 200 --------|&lt;--------|
+[ Client ]              [ Nginx ]     [ Tomcat ]
+    |-----------------------&gt;|------------&gt;|
+    |                        |             |
+    |                        |             |
+    X abort                  |             |
+    |---------- long poll --&gt;|----------&gt;| |
+    |                        |           | |
+    |                        |           | | 
+    |&lt;---------- 200 --------|&lt;----------|&lt;|
 </pre>
 
 <!SLIDE>
@@ -695,13 +730,76 @@ at org.springframework.beans.factory.support....
 
 # Timeout Demo #
 
-<!SLIDE> 
+<!SLIDE>
 
-# Security #
+# Java Compiler #
+
+* Cloud Foundry does not include a JDK
+* JSR199 <tt>ToolProvider.getSystemJavaCompiler()</tt> not an option
+* Eclipse compiler works with JRE but has bugs<sup>*</sup>
+* Work around using <tt>org.cloudfoundry.tools.compiler.CloudFoundryJavaCompiler</tt>
+
+<div class="footnote"><sup>*</sup>https://bugs.eclipse.org/bugs/show_bug.cgi?id=188796</div>
 
 <!SLIDE>
 
 # Java Compiler #
+
+	@@@ java
+	CloudFoundryJavaCompiler compiler = 
+		new CloudFoundryJavaCompiler();
+	
+<!SLIDE>
+
+# Java Compiler #
+
+	@@@ java
+	CloudFoundryJavaCompiler compiler = 
+		new CloudFoundryJavaCompiler();
+	
+	StandardJavaFileManager standardFileManager = 
+		compiler.getStandardFileManager(null, null, null);
+
+	ResourceJavaFileManager fileManager = 
+		new ResourceJavaFileManager(standardFileManager);
+	
+
+<!SLIDE>
+
+# Java Compiler #
+
+	@@@ java
+	// Use org.cloudfoundry.tools.io.File 
+	// or org.cloudfoundry.tools.io.Folder
+
+	fileManager.setLocation(StandardLocation.CLASS_OUTPUT, 
+			classOutputFolder);
+	
+	fileManager.setLocation(StandardLocation.SOURCE_PATH, 
+			sourceFolder);
+
+	fileManager.setLocation(StandardLocation.CLASS_PATH, 
+			jarFile1, jarFile2);
+
+<!SLIDE>
+
+# Java Compiler #
+
+	@@@ java
+	Iterable<? extends JavaFileObject> compilationUnits = 
+		fileManager.list(StandardLocation.SOURCE_PATH, "", 
+			Collections.singleton(JavaFileObject.Kind.SOURCE), 
+			true);
+
+	CompilationTask task = compiler.getTask(null, fileManager, 
+		null, Arrays.asList("-encoding", "utf8"), null, 
+		compilationUnits);
+
+	task.call(); // returns true on success
+
+<!SLIDE subsection>
+
+# Compiler Demo #
 
 <!SLIDE>
 
