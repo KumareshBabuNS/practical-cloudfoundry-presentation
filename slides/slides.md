@@ -1,5 +1,4 @@
 <!SLIDE cover>
-
 # Practical Cloud Foundry #
 
 ## Phil Webb ##
@@ -12,15 +11,9 @@
 * Apache 2.0 licensed
 * twitter: @phillip_webb
 
-.notes provide a brief overview of the contents
+<!SLIDE center>
 
-<!SLIDE>
-
-# WaveMaker #
-
-&lt; screen shot here &gt;
-
-.notes TODO wavemaker screen shot.  Aquired 2011 100K+ java
+![wavemaker](wavemaker.png) 
 
 <!SLIDE>
 
@@ -30,7 +23,6 @@
 * Projects saved on disk
 * Uses JDK Java Compiler
 * Deploys to local tomcat
-
 
 <!SLIDE>
 
@@ -43,9 +35,14 @@
 
 <!SLIDE>
 
-# Overview #
+# Talk Overview #
 
-.notes TODO should we put an overview here?
+* Refactoring for the cloud
+* File system
+* Gateway timeouts
+* Java compiler
+* Standalone tomcat
+* Micro cloud foundry tips
 
 <!SLIDE>
 
@@ -64,6 +61,10 @@
 * Use micro cloud foundry
 * Add logging
 * Unit test
+
+<!SLIDE subsection>
+
+# Refactoring for the cloud
 
 <!SLIDE subsection>
 
@@ -257,9 +258,9 @@ at org.springframework.beans.factory.support....
 <pre>
 
 
-	+-----------------------------+
-	| Code ~~~~~~~~~~~~~~ Feature |
-	+-----------------------------+
+	+------------------------------+
+	| Code ~~~~~~~~~~~~~~~ Feature |
+	+------------------------------+
 </pre>
 
 <!SLIDE>
@@ -316,7 +317,7 @@ at org.springframework.beans.factory.support....
 
 <!SLIDE subsection>
 
-# File &#8594; Open File... #
+# File System #
 
 <!SLIDE>
 
@@ -528,7 +529,7 @@ at org.springframework.beans.factory.support....
 
 <!SLIDE subsection>
 
-# File Demo #
+# File System Demo #
 
 <!SLIDE>
 
@@ -574,7 +575,7 @@ at org.springframework.beans.factory.support....
 
 <!SLIDE >
 
-# Gottcha #
+# Gotcha #
 
 * OSX Finder with WebDav does not work
 * Transfer-Encoding: chunked fails<sup>*</sup>
@@ -586,7 +587,7 @@ at org.springframework.beans.factory.support....
 
 <!SLIDE subsection>
 
-# Timeout #
+# Gateway Timeouts #
 
 <!SLIDE>
 
@@ -730,6 +731,10 @@ at org.springframework.beans.factory.support....
 
 # Timeout Demo #
 
+<!SLIDE subsection>
+
+# Java Compiler #
+
 <!SLIDE>
 
 # Java Compiler #
@@ -801,24 +806,177 @@ at org.springframework.beans.factory.support....
 
 # Compiler Demo #
 
+<!SLIDE subsection>
+
+# Standalone Tomcat #
+
 <!SLIDE>
 
-# Tomcat Stand Alone #
+# Standalone Tomcat #
+
+* Tomcat 7 can be used with Cloud Foundry<sup>*</sup>
+* Bundle as a standalone application
+* Modify <tt>catalina.sh</tt> and <tt>startup.sh</tt><sup>*</sup>
+
+<div class="footnote"><sup>*</sup>http://blog.cloudfoundry.org/2012/06/18/deploying-tomcat-7-using-the-standalone-framework/</div>
 
 <!SLIDE>
 
-# Tunnel Debug #
+# Standalone Tomcat with Maven #
+
+* Maven dependency
+
+<p/>
+
+	@@@ xml
+	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>cloudfoundry-tomcat-standalone</artifactId>
+		<version>${project.version}</version>
+		<type>tar.gz</type>
+		<scope>runtime</scope>
+	</dependency>
+
+<div class="footnote">https://github.com/ericbottard/cloudfoundry-tomcat-7</div>
+
+<!SLIDE>
+
+# Standalone Tomcat with Maven #
+
+* Assembly plugin
+
+<p/>
+
+	@@@ xml
+	<artifactId>maven-assembly-plugin</artifactId>
+
+	<goal>attached</goal>
+
+	<configuration>
+		<descriptors>
+			<descriptor>${basedir}/src/assembly/
+				cloudfoundry-tomcat-standalone.xml</descriptor>
+		</descriptors>
+		<appendAssemblyId>false</appendAssemblyId>
+		<finalName>cloudfoundry-tomcat-standalone</finalName>
+	</configuration>
+
+<!SLIDE>
+
+# Standalone Tomcat with Maven #
+
+* Assembly XML
+
+<p/>
+
+	@@@ xml
+	<dependencySet>
+		<outputDirectory>/</outputDirectory>
+		<unpack>true</unpack>
+		<includes>
+			<include>
+				${project.groupId}:cloudfoundry-tomcat-standalone
+			</include>
+		</includes>
+	</dependencySet>
+
+	<outputDirectory>/webapps/ROOT</outputDirectory>
+
+<!SLIDE>
+
+# Gotcha #
+
+* Cloud profile no longer
+* Mongo host not auto-reconfigured
+* Need a CloudApplicationContextInitializer<sup>*</sup>
+
+<p/>
+
+	@@@xml
+	<context-param>
+		<param-name>contextInitializerClasses</param-name>
+		<param-value>
+			org.cloudfoundry.reconfiguration
+				.spring.CloudApplicationContextInitializer
+		</param-value>
+	</context-param>
+
+<div class="footnote"><sup>*</sup>https://github.com/cloudfoundry/vcap-java</div>
+
+<!SLIDE subsection>
+
+# Tomcat Demo #
+
+<!SLIDE subsection>
+
+# Micro Cloud Foundry Tips #
 
 <!SLIDE>
 
 # Micro Cloudfoundry Tips #
 
-* Add memory
-* Start with -debug
-* Disk space
-* Cookie Timeouts
-* VCAP.me + DNS + Tunnel
-* SSH to play
-* nginx timeouts
+* Give your VM more memory
+* Watch your disk usage
+* Use snapshots
+* Watch your clock
+
+<!SLIDE>
+
+# Use vcap.me #
+
+* Install local DNS
+
+<pre>$ brew install dnsmasq</pre>
+
+<pre class="conffile">
+# /usr/local/etc/dnsmasq.conf
+address=/cvap.me/127.0.0.1
+listen-address=127.0.0.1
+</pre>
+
+* Tunnel the connection
+
+<pre>$ sudo ssh -L 80:192.168.129.142:80 vcap@192.168.129.142</pre>
+
+
+<div class="footnote">http://blog.cloudfoundry.com/2011/09/08/working-offline-with-micro-cloud-foundry/</div>
+
+<!SLIDE>
+
+# Change NGINX Timeouts
+
+	$ ssh vcap@api.vcap.me
+
+	$ sudo apt-get install vim
+	$ sudo vim /var/vcap/jobs/router/config/nginx.conf
+
+
+<pre class="conffile">
+	<em># around line 66</em>
+
+	proxy_send_timeout 3000;
+	proxy_read_timeout 3000;
+</pre>
+
+	$ sudo monit restart nginx
+
+<!SLIDE subsection>
+
+# Summary #
+
+<!SLIDE>
+
+# Summary #
+
+* You need to work to get the benefits of cloud computing 
+* Expect to make changes
+* Take the opportunity to improve your code
+* Use this source
+
+<!SLIDE subsection>
+
+# Thank You! #
+
+
 
 
