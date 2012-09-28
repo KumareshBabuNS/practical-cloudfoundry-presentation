@@ -44,11 +44,11 @@
 * Standalone tomcat
 * Micro cloud foundry tips
 
-<!SLIDE>
+<!SLIDE compromises>
 
 # Cloud Compromises #
 
-<img style="margin-left: -15px; margin-top: 10px;" src="/image/slides/compromises.png">
+![Compromises](compromises.png) 
 
 <!SLIDE>
 
@@ -252,7 +252,7 @@ at org.springframework.beans.factory.support....
 
 * Identify the features from your code to abstract
 
-<img src="/image/slides/recap1.png">
+![recap](recap1.png)
 
 <!SLIDE>
 
@@ -260,7 +260,7 @@ at org.springframework.beans.factory.support....
 
 * Define the interface and make existing code the implementation
 
-<img src="/image/slides/recap2.png">
+![recap](recap2.png)
 
 <!SLIDE>
 
@@ -268,7 +268,7 @@ at org.springframework.beans.factory.support....
 
 * Create cloud and local variants
 
-<img src="/image/slides/recap3.png">
+![recap](recap3.png)
 
 <!SLIDE>
 
@@ -589,114 +589,113 @@ at org.springframework.beans.factory.support....
 		}
 	}
 
-<!SLIDE>
+<!SLIDE longpoll>
 
 # Long Polling #
 
-<img style="margin-left: 15px;" src="/image/slides/lpoll1.png">
+![Long Poll](lpoll1.png)
 
-<!SLIDE>
-
-# Long Polling #
-
-<img style="margin-left: 15px;" src="/image/slides/lpoll2.png">
-
-<!SLIDE>
+<!SLIDE longpoll>
 
 # Long Polling #
 
-<img style="margin-left: 15px;" src="/image/slides/lpoll3.png">
+![Long Poll](lpoll2.png)
 
-<!SLIDE>
-
-# Long Polling #
-
-<img style="margin-left: 15px;" src="/image/slides/lpoll4.png">
-
-<!SLIDE>
+<!SLIDE longpoll>
 
 # Long Polling #
 
-<img style="margin-left: 15px;" src="/image/slides/lpoll5.png">
+![Long Poll](lpoll3.png)
 
-<!SLIDE>
-
-# Long Polling #
-
-<img style="margin-left: 15px;" src="/image/slides/lpoll6.png">
-
-<!SLIDE>
+<!SLIDE longpoll>
 
 # Long Polling #
 
-<img style="margin-left: 15px;" src="/image/slides/lpoll7.png">
+![Long Poll](lpoll4.png)
 
-<!SLIDE>
-
-# Long Polling #
-
-<img style="margin-left: 15px;" src="/image/slides/lpoll8.png">
-
-<!SLIDE>
+<!SLIDE longpoll>
 
 # Long Polling #
 
-<img style="margin-left: 15px;" src="/image/slides/lpoll9.png">
+![Long Poll](lpoll5.png)
 
-<!SLIDE>
-
-# Long Polling #
-
-<img style="margin-left: 15px;" src="/image/slides/lpoll10.png">
-
-<!SLIDE>
+<!SLIDE longpoll>
 
 # Long Polling #
 
-<img style="margin-left: 15px;" src="/image/slides/lpoll11.png">
+![Long Poll](lpoll6.png)
 
-<!SLIDE>
-
-# Long Polling #
-
-<img style="margin-left: 15px;" src="/image/slides/lpoll12.png">
-
-<!SLIDE>
+<!SLIDE longpoll>
 
 # Long Polling #
 
-<img style="margin-left: 15px;" src="/image/slides/lpoll13.png">
+![Long Poll](lpoll7.png)
 
-<!SLIDE>
-
-# Long Polling #
-
-<img style="margin-left: 15px;" src="/image/slides/lpoll14.png">
-
-<!SLIDE>
+<!SLIDE longpoll>
 
 # Long Polling #
 
-<img style="margin-left: 15px;" src="/image/slides/lpoll15.png">
+![Long Poll](lpoll8.png)
 
-<!SLIDE>
-
-# Long Polling #
-
-<img style="margin-left: 15px;" src="/image/slides/lpoll16.png">
-
-<!SLIDE>
+<!SLIDE longpoll>
 
 # Long Polling #
 
-<img style="margin-left: 15px;" src="/image/slides/lpoll17.png">
+![Long Poll](lpoll9.png)
 
-<!SLIDE>
+<!SLIDE longpoll>
 
 # Long Polling #
 
-<img style="margin-left: 15px;" src="/image/slides/lpoll18.png">
+![Long Poll](lpoll10.png)
 
+<!SLIDE longpoll>
+
+# Long Polling #
+
+![Long Poll](lpoll11.png)
+
+<!SLIDE longpoll>
+
+# Long Polling #
+
+![Long Poll](lpoll12.png)
+
+<!SLIDE longpoll>
+
+# Long Polling #
+
+![Long Poll](lpoll13.png)
+
+<!SLIDE longpoll>
+
+# Long Polling #
+
+![Long Poll](lpoll14.png)
+
+<!SLIDE longpoll>
+
+# Long Polling #
+
+![Long Poll](lpoll15.png)
+
+<!SLIDE longpoll>
+
+# Long Polling #
+
+![Long Poll](lpoll16.png)
+
+<!SLIDE longpoll>
+
+# Long Polling #
+
+![Long Poll](lpoll17.png)
+
+<!SLIDE longpoll>
+
+# Long Polling #
+
+![Long Poll](lpoll18.png)
 
 <!SLIDE>
 
