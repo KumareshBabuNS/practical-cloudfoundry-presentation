@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <title>Presentation name</title>
+  <title>Practical Cloud Foundry</title>
 
   <meta name="viewport" content="width=device-width"/>
 
@@ -31,6 +31,14 @@
   <script type="text/javascript" src="./js/coffee-script.js"></script>
 
   
+    
+      <script type="text/javascript" src="./js/sh_lang/sh_java.min.js"></script>
+    
+      <script type="text/javascript" src="./js/sh_lang/sh_xml.min.js"></script>
+    
+      <script type="text/javascript" src="./js/sh_lang/sh_html.min.js"></script>
+    
+      <script type="text/javascript" src="./js/sh_lang/sh_javascript.min.js"></script>
     
   
 
@@ -91,146 +99,956 @@
 
 <h2>Phil Webb</h2>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/2">
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/2">
 <h1>Welcome</h1>
 
 <ul>
-<li>Code for this presentation is Apache 2.0 licenced and available https://github.com/philwebb/practical-cloudfoundry</li>
-<li>github location</li>
-<li>apache 2.0</li>
+<li>https://github.com/philwebb/practical-cloudfoundry</li>
+<li>Apache 2.0 licensed</li>
+<li>twitter: @phillip_webb</li>
 </ul>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/3">
-<h1>Overview</h1>
+</div><div class="slide" data-transition="none"><div class="content center" ref="slides/slides/3">
+<p><img src="./file/slides/wavemaker.png" width="1047" height="652" alt="wavemaker"> </img>
+</p>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/4">
-<h1>Wavemaker</h1>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/4">
+<h1>WaveMaker</h1>
 
 <ul>
-<li>About Code</li>
-<li>106K Java</li>
-<li>History</li>
-</ul>
-</div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/5">
-<h1>Wavmaker Local</h1>
-
-<ul>
-<li>Web Application</li>
-<li>Run locally</li>
+<li>Local web application</li>
 <li>Projects saved on disk</li>
-<li>JDK Compiler</li>
-<li>Deploed to local tomcat</li>
+<li>Uses JDK Java compiler</li>
+<li>Deploys to local tomcat</li>
 </ul>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/6">
-<h1>Wavmaker Cloud</h1>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/5">
+<h1>WaveMaker on Cloud Foundry</h1>
 
 <ul>
-<li>Web Application</li>
-<li>Run locally</li>
-<li>Projects saved on disk</li>
-<li>JDK Compiler</li>
-<li>Deploed to local tomcat</li>
+<li><del>Local</del> web application</li>
+<li>Projects saved <del>on disk</del></li>
+<li>Uses <del>JDK</del> Java compiler</li>
+<li>Deploys <del>to local tomcat</del></li>
 </ul>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/7">
-<h1>PITA Factor</h1>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/6">
+<h1>Talk Overview</h1>
 
 <ul>
-<li>local is PITA to setup but good to develop</li>
-<li>cloud is opposite</li>
+<li>Refactoring for the cloud</li>
+<li>File system</li>
+<li>Gateway timeouts</li>
+<li>Java compiler</li>
+<li>Standalone tomcat</li>
+<li>Micro cloud foundry tips</li>
 </ul>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/8">
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/7">
+<h1>Cloud Compromises</h1>
+
+<p><img style="margin-left: -15px; margin-top: 10px;" src="/image/slides/compromises.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/8">
 <h1>General Tips</h1>
 
 <ul>
-<li>Use logging</li>
-<li>JUnit</li>
+<li>Develop locally first</li>
+<li>Use micro cloud foundry</li>
+<li>Add logging</li>
+<li>Unit test</li>
 </ul>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/9">
-<h1>The name demo</h1>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="slides/slides/9">
+<h1>Refactoring for the cloud</h1>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/10">
-<h1>Changes / Splitup</h1>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="slides/slides/10">
+<h1>Refactor &#x2192; Extract Interface</h1>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/11">
-<h1>Different Plugin Options</h1>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/11">
+<h1>Example</h1>
+
+<pre class="sh_java"><code>@Controller
+public class MainController {
+
+    @RequestMapping({ "/", "/index.html" })
+    public ModelAndView index() {
+        return new ModelAndView("index", 
+            Collections.singletonMap("username", 
+                System.getProperty("user.name")));
+    }
+}</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/12">
+<h1>Example</h1>
+
+<pre class="sh_java"><code>
+
+
+
+
+
+
+                System.getProperty("user.name")</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/13">
+<h1>Example</h1>
+
+<pre class="sh_java"><code>public interface UserDetails {
+    String getUsername();
+}</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/14">
+<h1>Example</h1>
+
+<pre class="sh_java"><code>public interface UserDetails {
+    String getUsername();
+}
+
+
+@Component
+public class LocalUserDetails implements UserDetails {
+
+    @Override
+    public String getUsername() {
+        return System.getProperty("user.name");
+    }
+}</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/15">
+<h1>Example</h1>
+
+<pre class="sh_java"><code>@Controller
+public class MainController {
+
+    @Autowired
+    private UserDetails userDetails;
+
+    @RequestMapping({ "/", "/index.html" })
+    public ModelAndView index() {
+        return new ModelAndView("index", 
+            Collections.singletonMap("username", 
+                userDetail.getUsername()));
+    }
+}</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="slides/slides/16">
+<h1>New &#x2192; Class</h1>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/17">
+<h1>Example</h1>
+
+<pre class="sh_java"><code>@Component
+public class CloudUserDetails implements UserDetails {
+
+    @Override
+    public String getUsername() {
+        return CloudEnvironment.current().getUser();
+    }
+}</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/18">
+<h1>#FAIL</h1>
+
+<pre>
+org.springframework.beans.factory.NoSuchBeanDefinitionException: 
+<strong style="font-size: 2em;">No unique bean</strong> of type [org.cloudfoundry.practical.
+demo.core.UserDetails]  is defined: expected single matching 
+bean but <strong style="font-size: 2em;">found 2</strong>: [<em>localUserDetails</em>, <em>cloudUserDetails</em>]
+
+at org.springframework.beans.factory.support....
+</pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/19">
+<h1>Never the twain shall meet</h1>
 
 <ul>
-<li>Build syste,</li>
-<li>Spring profiles</li>
+<li>Local or Cloud Strategy</li>
+<li>Use Build System 
+
+<ul>
+<li>e.g. Maven Dependencies</li>
+</ul></li>
+<li>Use Spring Profiles</li>
+</ul>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/20">
+<h1>Spring profiles in XML</h1>
+
+<pre class="sh_xml"><code>&lt;beans profile="default"&gt;
+    &lt;bean class="org.cloudfoundry.practical.demo.
+        local.LocalUserDetails"&gt;
+&lt;/beans&gt;
+
+&lt;beans profile="cloud"&gt;
+    &lt;bean class="org.cloudfoundry.practical.demo.
+        cloud.CloudUserDetails"
+&lt;/beans&gt;</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/21">
+<h1>Spring profiles in code</h1>
+
+<pre class="sh_java"><code>package org.cloudfoundry.practical.demo.local;
+
+@Configuration
+@Profile("default")
+@ComponentScan
+public class LocalConfiguration {
+}
+
+
+package org.cloudfoundry.practical.demo.cloud;
+
+@Configuration
+@Profile("cloud")
+@ComponentScan
+public class CloudConfiguration {
+}</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/22">
+<h1>Gotcha</h1>
+
+<ul>
+<li>Cloud foundry Servlet 2.5 means web.xml</li>
 </ul>
 
-<p>demo profiles</p>
+<p><p/></p>
+
+<pre class="sh_xml"><code>&lt;param-name&gt;contextClass&lt;/param-name&gt;
+&lt;param-value&gt;
+    org.springframework.web.context.support.
+        AnnotationConfigWebApplicationContext
+&lt;/param-value&gt;
+
+&lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+&lt;param-value&gt;
+    org.cloudfoundry.practical.demo.RootConfiguration
+&lt;/param-value&gt;</code></pre>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/12">
-<h1>SET_ENV</h1>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="slides/slides/23">
+<h1>Profiles Demo</h1>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/13">
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/24">
+<h1>Recap</h1>
+
+<ul>
+<li>Identify the features from your code to abstract</li>
+</ul>
+
+<p><img src="/image/slides/recap1.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/25">
+<h1>Recap</h1>
+
+<ul>
+<li>Define the interface and make existing code the implementation</li>
+</ul>
+
+<p><img src="/image/slides/recap2.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/26">
+<h1>Recap</h1>
+
+<ul>
+<li>Create cloud and local variants</li>
+</ul>
+
+<p><img src="/image/slides/recap3.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/27">
+<h1>Environment Variables</h1>
+
+<pre><code>$ vmc env-add myapp key=value
+</code></pre>
+
+<p><p/></p>
+
+<pre class="sh_java"><code>public void example() {
+    String value = System.getEnv("key")
+    // ... do something with value
+}
+
+// or if a spring bean
+
+@Value("#{systemEnvironment['key']}")
+private String value;</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="slides/slides/28">
+<h1>File System</h1>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/29">
 <h1>File System</h1>
 
 <ul>
-<li>About the API</li>
-<li>Mongo + Folders</li>
-<li>Differences that help</li>
+<li>Local storage will disappear when you application stops, crashes or moves</li>
+<li>Mongo GridFS is an alternative</li>
+<li>There are limits
+
+<ul>
+<li>2GB Disk</li>
+<li>240MB Mongo</li>
+</ul></li>
+<li>Blobstore is coming</li>
 </ul>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/14">
-<h1>Temp Disk</h1>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/30">
+<h1>Resource Abstraction</h1>
+
+<pre class="sh_java"><code>package org.cloudfoundry.tools.io;
+
+
+public interface Resource {
+    // ...
+}
+
+public interface Folder extends Resource {
+    // ...
+}
+
+public interface File extends Resource {
+    // ...
+}</code></pre>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/15">
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/31">
+<h1>Local implementation</h1>
+
+<pre class="sh_java"><code>Folder folder = new LocalFolder("/path/on/disk");
+
+File file = folder.getFile("subfolder/file.txt");
+InputStream stream = file.getContent().asInputStream();
+try {
+    // do something ...
+} finally {
+    stream.close();
+}</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/32">
+<h1>Mongo implementation</h1>
+
+<pre class="sh_java"><code>Folder folder = new MongoFolder(db, "bucket");
+
+File file = folder.getFile("subfolder/file.txt");
+InputStream stream = file.getContent().asInputStream();
+try {
+    // do something ...
+} finally {
+    stream.close();
+}</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/33">
 <h1>Embrace the change</h1>
 
 <ul>
-<li>It you need to change it, make it better</li>
+<li>If you need to change your code, make it better</li>
+<li>Design your API around <strong>your</strong> needs</li>
+<li>Make it hard to do the wrong thing</li>
 </ul>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/16">
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/34">
+<h1>Example</h1>
+
+<pre class="sh_java"><code>import java.io.File;
+
+public void someMethod(File folder) {
+    if(!folder.isDirectory()) {
+        throw new IllegalArgumentException("Must be a folder");
+    }
+    // ...
+}</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/35">
+<h1>Example</h1>
+
+<pre class="sh_java"><code>import org.cloudfoundry.tools.io.Folder;
+
+public void someMethod(Folder folder) {
+    // ...
+}</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/36">
+<h1>Example</h1>
+
+<pre class="sh_java"><code>import java.io.File;
+
+public void someMethod(File file) throw IOException {
+    StringBuffer content = new StringBuffer();
+    Reader reader = new FileReader(filePath));
+    try {
+        char[] buf = new char[1024];
+        int numRead=0;
+        while((numRead=reader.read(buf)) != -1){
+            String readData = String.valueOf(buf, 0, numRead);
+            fileData.append(readData);
+            buf = new char[1024];
+        }
+    finally {
+        reader.close();
+    }
+    // do something with content
+}</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/37">
+<h1>Example</h1>
+
+<pre class="sh_java"><code>import org.cloudfoundry.tools.io.File;
+
+public void someMethod(File file) {
+    String content = file.getContent().asString();
+    // do something with content
+}
+
+// Only throws RuntimeExceptions, IOException is wrapped</code></pre>
+
+<p class="notes">Highlight no IOException</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/38">
+<h1>Content</h1>
+
+<pre class="sh_java"><code>file.getContent()
+
+    String asString();
+    byte[] asBytes();
+
+    InputStream asInputStream();
+    OutputStream asOutputStream();
+
+    Reader asReader();
+    Writer asWriter();
+
+    void write(String content)
+    void write(InputStream content)
+    void write(Reader content);
+
+    void copyTo(OutputStream outputStream)
+    void copyTo(Writer writer)</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/39">
+<h1>Resources and filtering</h1>
+
+<pre class="sh_java"><code>
+// recursively delete backup files
+folder.find().files().include(
+        FilterOn.names().ending(".bak")
+    ).delete();
+
+
+
+// copy immediate folders (excluding *.~*)
+folder.list().folders().exclude(
+        FilterOn.antPattern("*.~*")
+    ).copyTo(destinationFolder);</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/40">
+<h1>Zip Files</h1>
+
+<pre class="sh_java"><code>
+// Create a zip stream
+InputStream zipStream = ZipArchive.compress(folder);
+
+// Unpack a zip
+ZipArchive.unpack(zipStream, destinationFolder);
+
+// Read a zip file as if it is a folder
+Folder zip = new ZipArchive(file);
+zip.getFile("/inside/zip/file.txt").getContent().asString();</code></pre>
+
+<p class="notes">Compress can handle resources</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/41">
+<h1>Virtual Folders</h1>
+
+<pre class="sh_java"><code>// Virtual folder exist in memory
+Folder folder = new VirtualFolder();
+folder.getFile("/a/b.txt").getContent().write("in memory")
+
+// Only overwritten data consumes space
+otherFolder.copyContentsTo(folder);
+folder.getFile("a.txt").getContent().write("replaced");
+folder.getFile("b.txt").getContent().asString();</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="slides/slides/42">
+<h1>File System Demo</h1>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/43">
 <h1>How to @Configure mongo</h1>
+
+<pre class="sh_java"><code>@Configuration
+@Profile("cloud")
+@ComponentScan
+public class CloudConfiguration {
+
+    @Autowired
+    private MongoDbFactory mongo;
+
+    @Bean
+    public CloudMongoDbFactoryBean mongo() {
+        return new CloudMongoDbFactoryBean();
+    }
+}</code></pre>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/17">
-<h1>Demo File System</h1>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/44">
+<h1>Security</h1>
+
+<pre class="sh_xml"><code>&lt;security:http&gt;
+    &lt;security:http-basic /&gt;
+    &lt;security:logout /&gt;
+    &lt;security:intercept-url pattern="/dav/**" 
+        access="ROLE_WEBDAV" /&gt;
+&lt;/security:http&gt;
+
+&lt;bean name="cloudFoundryAuthenticationProvider" 
+        class="org.cloudfoundry.tools.security.
+                    CloudFoundryAuthenticationProvider"&gt;
+    &lt;property name="authorities" value="ROLE_WEBDAV"/&gt;
+&lt;/bean&gt;
+
+&lt;security:authentication-manager&gt;
+    &lt;security:authentication-provider 
+        ref="cloudFoundryAuthenticationProvider"/&gt;
+&lt;/security:authentication-manager&gt;</code></pre>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/18">
-<h1>Chunked Problem</h1>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/45">
+<h1>Gotcha</h1>
 
 <ul>
-<li>Wireshark</li>
+<li>OSX Finder with WebDav does not work</li>
+<li>Transfer-Encoding: chunked fails<sup>*</sup></li>
+<li>Finding problems like this can be hard
+
+<ul>
+<li>Use server logs</li>
+<li>Use packet sniffing (Wireshark)</li>
+</ul></li>
 </ul>
+
+<div class="footnote"><sup>*</sup> http://stackoverflow.com/questions/8528600/how-to-make-a-chunked-request-via-nginx</div>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/19">
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="slides/slides/46">
+<h1>Gateway Timeouts</h1>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/47">
 <h1>504 Gateway Timeouts</h1>
 
 <ul>
-<li>Default</li>
-<li>Drip</li>
-<li>Shim</li>
+<li>You are not the only thing in the cloud</li>
+<li>Sockets / File Handles are a commodity</li>
+<li>You will be cut off after 30-60 seconds without traffic</li>
 </ul>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/20">
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/48">
+<h1>Drip Feeding</h1>
+
+<pre class="sh_java"><code>
+// If you keep data flowing you will not timeout
+
+@RequestMapping("/drip")
+public void drop(HttpServletResponse response) throws IOException {
+    ServletOutputStream outputStream = response.getOutputStream();
+    while(gotWorkToDo()) {
+        String fragment = doSomeWork(); // &lt; 30 secs
+        outputStream.write(fragment);
+        response.flushBuffer();
+    }
+}</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/49">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll1.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/50">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll2.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/51">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll3.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/52">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll4.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/53">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll5.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/54">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll6.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/55">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll7.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/56">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll8.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/57">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll9.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/58">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll10.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/59">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll11.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/60">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll12.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/61">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll13.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/62">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll14.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/63">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll15.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/64">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll16.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/65">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll17.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/66">
+<h1>Long Polling</h1>
+
+<p><img style="margin-left: 15px;" src="/image/slides/lpoll18.png"/>
+</p>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/67">
+<h1>Long Poll Client Shim</h1>
+
+<pre class="sh_html"><code>&lt;script type="text/javascript" 
+    th:src="@{/cloudfoundry/dojo-xhr-timeout-shim.js}"/&gt;</code></pre>
+
+<p><p/></p>
+
+<pre class="sh_javascript"><code>dojo.xhrPost({
+    url : requestUrl,
+    load : function(result) {
+        // handle the result
+    },
+    error : function(result,ioargs) {
+        // handle the error
+    }
+});</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/68">
+<h1>Long Poll Server Shim</h1>
+
+<pre class="sh_xml"><code>&lt;filter&gt;
+    &lt;filter-name&gt;timeoutProtectionFilter&lt;/filter-name&gt;
+    &lt;filter-class&gt;org.springframework.web.filter.
+            DelegatingFilterProxy&lt;/filter-class&gt;
+&lt;/filter&gt;
+
+&lt;filter-mapping&gt;
+    &lt;filter-name&gt;timeoutProtectionFilter&lt;/filter-name&gt;
+    &lt;servlet-name&gt;dispatcherServlet&lt;/servlet-name&gt;
+&lt;/filter-mapping&gt;</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/69">
+<h1>Long Poll Server Shim</h1>
+
+<pre class="sh_java"><code>@Bean
+public TimeoutProtectionFilter timeoutProtectionFilter() {
+    TimeoutProtectionFilter filter = 
+        new TimeoutProtectionFilter();
+    filter.setProtector(timeoutProtectionStrategy());
+    return filter;
+}
+
+@Bean
+public TimeoutProtectionStrategy timeoutProtectionStrategy() {
+    return new ReplayingTimeoutProtectionStrategy();
+}</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="slides/slides/70">
+<h1>Timeout Demo</h1>
+</div>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="slides/slides/71">
 <h1>Java Compiler</h1>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/21">
-<h1>Tomcat Stand Alone</h1>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/72">
+<h1>Java Compiler</h1>
+
+<ul>
+<li>Cloud Foundry does not include a JDK</li>
+<li>JSR199 <tt>ToolProvider.getSystemJavaCompiler()</tt> not an option</li>
+<li>Eclipse compiler works with JRE but has bugs<sup>*</sup></li>
+<li>Work around using <tt>org.cloudfoundry.tools.compiler.CloudFoundryJavaCompiler</tt></li>
+</ul>
+
+<div class="footnote"><sup>*</sup>https://bugs.eclipse.org/bugs/show_bug.cgi?id=188796</div>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/22">
-<h1>Tunnel Debug</h1>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/73">
+<h1>Java Compiler</h1>
+
+<pre class="sh_java"><code>CloudFoundryJavaCompiler compiler = 
+    new CloudFoundryJavaCompiler();</code></pre>
 </div>
-</div><div class="slide" data-transition="none"><div class="content bullets" ref="slides/slides/23">
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/74">
+<h1>Java Compiler</h1>
+
+<pre class="sh_java"><code>CloudFoundryJavaCompiler compiler = 
+    new CloudFoundryJavaCompiler();
+
+StandardJavaFileManager standardFileManager = 
+    compiler.getStandardFileManager(null, null, null);
+
+ResourceJavaFileManager fileManager = 
+    new ResourceJavaFileManager(standardFileManager);</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/75">
+<h1>Java Compiler</h1>
+
+<pre class="sh_java"><code>// Use org.cloudfoundry.tools.io.File 
+// or org.cloudfoundry.tools.io.Folder
+
+fileManager.setLocation(StandardLocation.CLASS_OUTPUT, 
+        classOutputFolder);
+
+fileManager.setLocation(StandardLocation.SOURCE_PATH, 
+        sourceFolder);
+
+fileManager.setLocation(StandardLocation.CLASS_PATH, 
+        jarFile1, jarFile2);</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/76">
+<h1>Java Compiler</h1>
+
+<pre class="sh_java"><code>Iterable&lt;? extends JavaFileObject&gt; compilationUnits = 
+    fileManager.list(StandardLocation.SOURCE_PATH, "", 
+        Collections.singleton(JavaFileObject.Kind.SOURCE), 
+        true);
+
+CompilationTask task = compiler.getTask(null, fileManager, 
+    null, Arrays.asList("-encoding", "utf8"), null, 
+    compilationUnits);
+
+task.call(); // returns true on success</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="slides/slides/77">
+<h1>Compiler Demo</h1>
+</div>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="slides/slides/78">
+<h1>Standalone Tomcat</h1>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/79">
+<h1>Standalone Tomcat</h1>
+
+<ul>
+<li>Tomcat 7 can be used with Cloud Foundry<sup>*</sup></li>
+<li>Bundle as a standalone application</li>
+<li>Modify <tt>catalina.sh</tt> and <tt>startup.sh</tt><sup>*</sup></li>
+</ul>
+
+<div class="footnote"><sup>*</sup>http://blog.cloudfoundry.org/2012/06/18/deploying-tomcat-7-using-the-standalone-framework/</div>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/80">
+<h1>Standalone Tomcat with Maven</h1>
+
+<ul>
+<li>Maven dependency</li>
+</ul>
+
+<p><p/></p>
+
+<pre class="sh_xml"><code>&lt;dependency&gt;
+    &lt;groupId&gt;${project.groupId}&lt;/groupId&gt;
+    &lt;artifactId&gt;cloudfoundry-tomcat-standalone&lt;/artifactId&gt;
+    &lt;version&gt;${project.version}&lt;/version&gt;
+    &lt;type&gt;tar.gz&lt;/type&gt;
+    &lt;scope&gt;runtime&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
+
+<div class="footnote">https://github.com/ericbottard/cloudfoundry-tomcat-7</div>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/81">
+<h1>Standalone Tomcat with Maven</h1>
+
+<ul>
+<li>Assembly plugin</li>
+</ul>
+
+<p><p/></p>
+
+<pre class="sh_xml"><code>&lt;artifactId&gt;maven-assembly-plugin&lt;/artifactId&gt;
+
+&lt;goal&gt;attached&lt;/goal&gt;
+
+&lt;configuration&gt;
+    &lt;descriptors&gt;
+        &lt;descriptor&gt;${basedir}/src/assembly/
+            cloudfoundry-tomcat-standalone.xml&lt;/descriptor&gt;
+    &lt;/descriptors&gt;
+    &lt;appendAssemblyId&gt;false&lt;/appendAssemblyId&gt;
+    &lt;finalName&gt;cloudfoundry-tomcat-standalone&lt;/finalName&gt;
+&lt;/configuration&gt;</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/82">
+<h1>Standalone Tomcat with Maven</h1>
+
+<ul>
+<li>Assembly XML</li>
+</ul>
+
+<p><p/></p>
+
+<pre class="sh_xml"><code>&lt;dependencySet&gt;
+    &lt;outputDirectory&gt;/&lt;/outputDirectory&gt;
+    &lt;unpack&gt;true&lt;/unpack&gt;
+    &lt;includes&gt;
+        &lt;include&gt;
+            ${project.groupId}:cloudfoundry-tomcat-standalone
+        &lt;/include&gt;
+    &lt;/includes&gt;
+&lt;/dependencySet&gt;
+
+&lt;outputDirectory&gt;/webapps/ROOT&lt;/outputDirectory&gt;</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/83">
+<h1>Gotcha</h1>
+
+<ul>
+<li>Cloud profile no longer enabled</li>
+<li>Mongo host not auto-reconfigured</li>
+<li>Need a CloudApplicationContextInitializer<sup>*</sup></li>
+</ul>
+
+<p><p/></p>
+
+<pre class="sh_xml"><code>&lt;context-param&gt;
+    &lt;param-name&gt;contextInitializerClasses&lt;/param-name&gt;
+    &lt;param-value&gt;
+        org.cloudfoundry.reconfiguration
+            .spring.CloudApplicationContextInitializer
+    &lt;/param-value&gt;
+&lt;/context-param&gt;</code></pre>
+
+<div class="footnote"><sup>*</sup>https://github.com/cloudfoundry/vcap-java</div>
+</div>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="slides/slides/84">
+<h1>Tomcat Demo</h1>
+</div>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="slides/slides/85">
+<h1>Micro Cloud Foundry Tips</h1>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/86">
 <h1>Micro Cloudfoundry Tips</h1>
 
 <ul>
-<li>Add memory</li>
-<li>Start with -debug</li>
-<li>Disk space</li>
-<li>Cookie Timeouts</li>
-<li>VCAP.me + DNS + Tunnel</li>
-<li>SSH to play</li>
-<li>nginx timeouts</li>
+<li>Give your VM more memory</li>
+<li>Watch your disk usage</li>
+<li>Use snapshots</li>
+<li>Watch your clock</li>
 </ul>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/87">
+<h1>Use vcap.me</h1>
+
+<ul>
+<li>Install local DNS</li>
+</ul>
+
+<pre>$ brew install dnsmasq</pre>
+
+<pre class="conffile">
+# /usr/local/etc/dnsmasq.conf
+address=/cvap.me/127.0.0.1
+listen-address=127.0.0.1
+</pre>
+
+<ul>
+<li>Tunnel the connection</li>
+</ul>
+
+<pre>$ sudo ssh -L 80:192.168.129.142:80 vcap@192.168.129.142</pre>
+
+<div class="footnote">http://blog.cloudfoundry.com/2011/09/08/working-offline-with-micro-cloud-foundry/</div>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/88">
+<h1>Change NGINX Timeouts</h1>
+
+<pre><code>$ ssh vcap@api.vcap.me
+
+$ sudo apt-get install vim
+$ sudo vim /var/vcap/jobs/router/config/nginx.conf
+</code></pre>
+
+<pre class="conffile">
+    <em># around line 66</em>
+
+    proxy_send_timeout 3000;
+    proxy_read_timeout 3000;
+</pre>
+
+<pre><code>$ sudo monit restart nginx
+</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="slides/slides/89">
+<h1>Summary</h1>
+</div>
+</div><div class="slide" data-transition="none"><div class="content" ref="slides/slides/90">
+<h1>Summary</h1>
+
+<ul>
+<li>You need to work to get the benefits of cloud computing </li>
+<li>Expect to make changes</li>
+<li>Take the opportunity to improve your code</li>
+<li>Reuse this source code</li>
+</ul>
+</div>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="slides/slides/91">
+<h1>Thank You!</h1>
 </div>
 </div></div>
 <div id="pauseScreen">
