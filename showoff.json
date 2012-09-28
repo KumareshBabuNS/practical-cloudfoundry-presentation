@@ -1,7 +1,7 @@
 {
-  "name": "Presentation name",
-  "description": "Example Presentation",
-  "author": "Your Name",
+  "name": "Practical Cloud Foundry",
+  "description": "Practical Cloud Foundry",
+  "author": "Phillip Webb",
   "pause_msg": "Paused !!!",
   "sections": [
     {"section":"slides"}
