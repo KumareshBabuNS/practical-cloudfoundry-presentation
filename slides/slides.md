@@ -19,18 +19,18 @@
 
 # WaveMaker #
 
-* Local Web Application
+* Local web application
 * Projects saved on disk
-* Uses JDK Java Compiler
+* Uses JDK Java compiler
 * Deploys to local tomcat
 
 <!SLIDE>
 
 # WaveMaker on Cloud Foundry #
 
-* <del>Local</del> Web Application
+* <del>Local</del> web application
 * Projects saved <del>on disk</del>
-* Uses <del>JDK</del> Java Compiler
+* Uses <del>JDK</del> Java compiler
 * Deploys <del>to local tomcat</del>
 
 <!SLIDE>
@@ -46,12 +46,9 @@
 
 <!SLIDE>
 
-# Cloud PITA Factor #
+# Cloud Compromises #
 
-* Local is PITA to setup but good to develop
-* Cloud is opposite
-
-&lt; image here &gt;
+<img style="margin-left: -15px; margin-top: 10px;" src="/image/slides/compromises.png">
 
 <!SLIDE>
 
@@ -255,13 +252,7 @@ at org.springframework.beans.factory.support....
 
 * Identify the features from your code to abstract
 
-<pre>
-
-
-	+------------------------------+
-	| Code ~~~~~~~~~~~~~~~ Feature |
-	+------------------------------+
-</pre>
+<img src="/image/slides/recap1.png">
 
 <!SLIDE>
 
@@ -269,15 +260,7 @@ at org.springframework.beans.factory.support....
 
 * Define the interface and make existing code the implementation
 
-<pre>
-
-
-	+------------| |---------------+
-	| Code       | |       Feature |
-	+------------| |---------------+
-	          interface
-
-</pre>
+<img src="/image/slides/recap2.png">
 
 <!SLIDE>
 
@@ -285,16 +268,7 @@ at org.springframework.beans.factory.support....
 
 * Create cloud and local variants
 
-<pre>
-                   +----------------+	
-                   | CloudFeature   |
-	+------------| +----------------+
-	| Code       |        or
-	+------------| +----------------+
-	               | LocalFeature   |
-	               +----------------+
-</pre>
-
+<img src="/image/slides/recap3.png">
 
 <!SLIDE>
 
@@ -617,60 +591,112 @@ at org.springframework.beans.factory.support....
 
 <!SLIDE>
 
-# Long Poll #
+# Long Polling #
 
-<pre>
-[ Client ]              [ Server ]
-    |-----------------------&gt;|
-    |                        |
-    |&lt;--------- 200 ---------|
-</pre>
+<img style="margin-left: 15px;" src="/image/slides/lpoll1.png">
 
 <!SLIDE>
 
-# Long Poll #
+# Long Polling #
 
-<pre>
-[ Client ]              [ Server ]
-    |-----------------------&gt;|
-    |                        |
-    |                        |
-    |                        |
-    |&lt;--------- 504 ---------|
-</pre>
-
+<img style="margin-left: 15px;" src="/image/slides/lpoll2.png">
 
 <!SLIDE>
 
-# Long Poll #
+# Long Polling #
 
-<pre>
-[ Client ]              [ Nginx ]     [ Tomcat ]
-    |-----------------------&gt;|------------&gt;|
-    |                        |             |
-    |                        |             |
-    |                        |             |
-    |&lt;--------- 504 ---------|             |
-                                           | continues to run
-                                           X
-                                     nowhere to go
-</pre>
+<img style="margin-left: 15px;" src="/image/slides/lpoll3.png">
 
 <!SLIDE>
 
-# Long Poll #
+# Long Polling #
 
-<pre>
-[ Client ]              [ Nginx ]     [ Tomcat ]
-    |-----------------------&gt;|------------&gt;|
-    |                        |             |
-    |                        |             |
-    X abort                  |             |
-    |---------- long poll --&gt;|----------&gt;| |
-    |                        |           | |
-    |                        |           | | 
-    |&lt;---------- 200 --------|&lt;----------|&lt;|
-</pre>
+<img style="margin-left: 15px;" src="/image/slides/lpoll4.png">
+
+<!SLIDE>
+
+# Long Polling #
+
+<img style="margin-left: 15px;" src="/image/slides/lpoll5.png">
+
+<!SLIDE>
+
+# Long Polling #
+
+<img style="margin-left: 15px;" src="/image/slides/lpoll6.png">
+
+<!SLIDE>
+
+# Long Polling #
+
+<img style="margin-left: 15px;" src="/image/slides/lpoll7.png">
+
+<!SLIDE>
+
+# Long Polling #
+
+<img style="margin-left: 15px;" src="/image/slides/lpoll8.png">
+
+<!SLIDE>
+
+# Long Polling #
+
+<img style="margin-left: 15px;" src="/image/slides/lpoll9.png">
+
+<!SLIDE>
+
+# Long Polling #
+
+<img style="margin-left: 15px;" src="/image/slides/lpoll10.png">
+
+<!SLIDE>
+
+# Long Polling #
+
+<img style="margin-left: 15px;" src="/image/slides/lpoll11.png">
+
+<!SLIDE>
+
+# Long Polling #
+
+<img style="margin-left: 15px;" src="/image/slides/lpoll12.png">
+
+<!SLIDE>
+
+# Long Polling #
+
+<img style="margin-left: 15px;" src="/image/slides/lpoll13.png">
+
+<!SLIDE>
+
+# Long Polling #
+
+<img style="margin-left: 15px;" src="/image/slides/lpoll14.png">
+
+<!SLIDE>
+
+# Long Polling #
+
+<img style="margin-left: 15px;" src="/image/slides/lpoll15.png">
+
+<!SLIDE>
+
+# Long Polling #
+
+<img style="margin-left: 15px;" src="/image/slides/lpoll16.png">
+
+<!SLIDE>
+
+# Long Polling #
+
+<img style="margin-left: 15px;" src="/image/slides/lpoll17.png">
+
+<!SLIDE>
+
+# Long Polling #
+
+<img style="margin-left: 15px;" src="/image/slides/lpoll18.png">
+
 
 <!SLIDE>
 
@@ -886,7 +912,7 @@ at org.springframework.beans.factory.support....
 
 # Gotcha #
 
-* Cloud profile no longer
+* Cloud profile no longer enabled
 * Mongo host not auto-reconfigured
 * Need a CloudApplicationContextInitializer<sup>*</sup>
 
@@ -971,7 +997,7 @@ listen-address=127.0.0.1
 * You need to work to get the benefits of cloud computing 
 * Expect to make changes
 * Take the opportunity to improve your code
-* Use this source
+* Reuse this source code
 
 <!SLIDE subsection>
 
