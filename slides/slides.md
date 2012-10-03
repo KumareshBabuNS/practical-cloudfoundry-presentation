@@ -22,7 +22,7 @@
 * Local web application
 * Projects saved on disk
 * Uses JDK Java compiler
-* Deploys to local tomcat
+* Deploys to local Tomcat
 
 <!SLIDE>
 
@@ -31,7 +31,7 @@
 * <del>Local</del> web application
 * Projects saved <del>on disk</del>
 * Uses <del>JDK</del> Java compiler
-* Deploys <del>to local tomcat</del>
+* Deploys <del>to local Tomcat</del>
 
 <!SLIDE>
 
@@ -41,8 +41,8 @@
 * File system
 * Gateway timeouts
 * Java compiler
-* Standalone tomcat
-* Micro cloud foundry tips
+* Standalone Tomcat
+* Micro Cloud Foundry tips
 
 <!SLIDE compromises>
 
@@ -55,7 +55,7 @@
 # General Tips #
 
 * Develop locally first
-* Use micro cloud foundry
+* Use Micro Cloud Foundry
 * Add logging
 * Unit test
 
@@ -226,7 +226,7 @@ at org.springframework.beans.factory.support....
 
 # Gotcha #
 
-* Cloud foundry Servlet 2.5 means web.xml
+* Cloud Foundry Servlet 2.5 means web.xml
 
 <p/>
 	
