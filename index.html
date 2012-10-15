@@ -295,7 +295,7 @@ at org.springframework.beans.factory.support....
 
 @Configuration
 @Profile("default")
-@ComponentScan
+@ComponentScan(basePackageClasses = LocalConfiguration.class)
 public class LocalConfiguration {
 }
 
@@ -304,7 +304,7 @@ package org.cloudfoundry.practical.demo.cloud;
 
 @Configuration
 @Profile("cloud")
-@ComponentScan
+@ComponentScan(basePackageClasses = CloudConfiguration.class)
 public class CloudConfiguration {
 }</code></pre>
 </div>
@@ -580,7 +580,7 @@ folder.getFile("b.txt").getContent().asString();</code></pre>
 
 <pre class="sh_java"><code>@Configuration
 @Profile("cloud")
-@ComponentScan
+@ComponentScan(basePackageClasses = CloudConfiguration.class)
 public class CloudConfiguration {
 
     @Autowired
